@@ -52,12 +52,31 @@ const drawCross = ({ tile }) => {
 }
 
 const drawCircle = ({ tile }) => {
-  const { x, y } = tile
+  const { ex, ey } = tile
 
   c.beginPath()
-  c.arc(x * 150 + 75, y * 150 + 75, 50, 0, 2 * Math.PI, false)
+  c.arc(ex * 150 + 75, ey * 150 + 75, 50, 0, 2 * Math.PI, false)
 
   c.stroke()
 }
 
-export { makeGrid, getTilesPos, drawCircle, drawCross }
+const enemyMove = ({ board }) => {
+  const emptySpaces = []
+
+  board.forEach((tile, y) => {
+    tile.forEach((item, i) => {
+      if (item === '-') {
+        emptySpaces.push({ ex: i, ey: y })
+      }
+    })
+  })
+
+  const randomNumber = Math.floor(Math.random() * emptySpaces.length)
+  return emptySpaces.length > 0 ? emptySpaces[randomNumber] : false
+}
+
+const chceckForWin = ({ board }) => {
+  console.log(board)
+}
+
+export { makeGrid, getTilesPos, drawCircle, enemyMove, drawCross, chceckForWin }
