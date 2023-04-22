@@ -6,7 +6,7 @@ class AI {
 
     board.forEach((tile, y) => {
       tile.forEach((item, i) => {
-        if (item === 0) {
+        if (item.value === 0) {
           emptySpaces.push({ x: i, y: y })
         }
       })

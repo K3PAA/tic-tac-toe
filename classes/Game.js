@@ -3,16 +3,9 @@ class Game {
     this.tileSize = tileSize
     this.boardSize = this.tileSize * 3
 
-    this.board = [
-      [0, 0, 0],
-      [0, 0, 0],
-      [0, 0, 0],
-    ]
-
     this.canvas = document.querySelector('canvas')
     this.context = this.canvas.getContext('2d')
 
-    // Nie wiem czy taki zapis jest odpowiedni czy powinno to być w createBoard
     this.canvas.width = this.boardSize
     this.canvas.height = this.boardSize
 
@@ -21,6 +14,32 @@ class Game {
       canvas: this.canvas,
       onMove: this.onPlayerMove.bind(this),
     })
+
+    this.board = [
+      [
+        new Tile({ position: { x: 0, y: 0 }, context: this.context, value: 0 }),
+        new Tile({ position: { x: 1, y: 0 }, context: this.context, value: 0 }),
+        new Tile({ position: { x: 2, y: 0 }, context: this.context, value: 0 }),
+      ],
+      [
+        new Tile({ position: { x: 0, y: 1 }, context: this.context, value: 0 }),
+        new Tile({ position: { x: 1, y: 1 }, context: this.context, value: 0 }),
+        new Tile({ position: { x: 2, y: 1 }, context: this.context, value: 0 }),
+      ],
+      [
+        new Tile({ position: { x: 0, y: 2 }, context: this.context, value: 0 }),
+        new Tile({ position: { x: 1, y: 2 }, context: this.context, value: 0 }),
+        new Tile({ position: { x: 2, y: 2 }, context: this.context, value: 0 }),
+      ],
+    ]
+  }
+
+  resetBoard() {
+    this.board.forEach((row) => {
+      row.forEach((tile) => tile.reset())
+    })
+
+    this.createBoard()
   }
 
   createBoard() {
@@ -36,38 +55,17 @@ class Game {
       this.context.lineWidth = 3
       this.context.stroke()
     }
-  }
-
-  drawCross(tile) {
-    const { x, y } = tile
-    this.context.moveTo(x * 150 + 25, y * 150 + 25)
-    this.context.lineTo(x * 150 + 125, y * 150 + 125)
-
-    this.context.moveTo(x * 150 + 125, y * 150 + 25)
-    this.context.lineTo(x * 150 + 25, y * 150 + 125)
-
-    this.context.strokeStyle = 'red'
-
-    this.context.stroke()
-  }
-
-  drawCircle(tile) {
-    const { x, y } = tile
-
-    this.context.beginPath()
-    this.context.arc(x * 150 + 75, y * 150 + 75, 50, 0, 2 * Math.PI, false)
-
-    this.context.stroke()
+    console.log(this.board)
   }
 
   onPlayerMove(tile) {
-    if (this.board[tile.y][tile.x] === 0) {
-      this.board[tile.y][tile.x] = 1
-      this.drawCross(tile)
+    if (this.board[tile.y][tile.x].value === 0) {
+      this.board[tile.y][tile.x].value = 1
+      this.board[tile.y][tile.x].drawCross()
       const aiTile = this.ai.move(this.board)
       if (aiTile) {
-        this.board[aiTile.y][aiTile.x] = 2
-        this.drawCircle(aiTile)
+        this.board[aiTile.y][aiTile.x].value = 2
+        this.board[aiTile.y][aiTile.x].drawCircle()
       }
     }
   }
