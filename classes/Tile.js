@@ -7,10 +7,14 @@ class Tile {
 
   reset() {
     if (this.value === 0) return
+    this.drawEmpty()
+  }
+
+  drawEmpty() {
     const { x, y } = this.position
     this.value = 0
     this.context.fillStyle = 'orange'
-    this.context.fillRect(x * 150, y * 150, 150, 150)
+    this.context.fillRect(x * 150 + 3, y * 150 + 3, 147, 147)
   }
 
   drawCross() {
@@ -32,5 +36,12 @@ class Tile {
     this.context.arc(x * 150 + 75, y * 150 + 75, 50, 0, 2 * Math.PI, false)
 
     this.context.stroke()
+  }
+
+  draw() {
+    if (this.value === 0) this.drawEmpty()
+    else if (this.value === 1) this.drawCross()
+    else if (this.value === 2) this.drawCircle()
+    else console.log('wrong number in game grid')
   }
 }

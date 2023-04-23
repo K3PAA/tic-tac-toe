@@ -7,4 +7,16 @@ const game = new Game({
 
 resetButton.addEventListener('click', () => game.resetBoard())
 
-game.createBoard()
+const gameAnimation = () => {
+  requestAnimationFrame(gameAnimation)
+
+  game.createBoard()
+
+  game.board.forEach((row) => {
+    row.forEach((element) => {
+      element.draw()
+    })
+  })
+}
+
+gameAnimation()

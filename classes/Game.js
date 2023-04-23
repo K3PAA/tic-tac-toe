@@ -50,8 +50,6 @@ class Game {
         tile.reset()
       })
     })
-
-    this.createBoard()
   }
 
   createBoard() {
@@ -68,19 +66,17 @@ class Game {
       this.context.lineTo(this.boardSize.width, i)
     }
 
-    // this.context.strokeStyle = 'red'
-    // this.context.lineWidth = 3
-    // this.context.stroke()
+    this.context.strokeStyle = 'red'
+    this.context.lineWidth = 3
+    this.context.stroke()
   }
 
   onPlayerMove(tile) {
     if (this.board[tile.y][tile.x].value === 0) {
       this.board[tile.y][tile.x].value = 1
-      this.board[tile.y][tile.x].drawCross()
       const aiTile = this.ai.move(this.board)
       if (aiTile) {
         this.board[aiTile.y][aiTile.x].value = 2
-        this.board[aiTile.y][aiTile.x].drawCircle()
       }
     }
   }
