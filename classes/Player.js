@@ -1,6 +1,8 @@
 class Player {
-  constructor({ canvas, onMove }) {
+  constructor({ canvas, onMove, boardWidth, boardHeight }) {
     this.canvas = canvas
+    this.boardHeight = boardHeight
+    this.boardWidth = boardWidth
     this.onMove = onMove
 
     this.canvas.addEventListener('click', (e) => this.onClick(e))
@@ -14,20 +16,18 @@ class Player {
   getTilesPos({ x, y }) {
     let tiles = { x: 0, y: 0 }
 
-    if (x < 150) {
-      tiles.x = 0
-    } else if (x < 300) {
-      tiles.x = 1
-    } else {
-      tiles.x = 2
+    for (let i = this.boardWidth; i >= 0; i--) {
+      if (i * 150 < x) {
+        tiles.x = i
+        break
+      }
     }
 
-    if (y < 150) {
-      tiles.y = 0
-    } else if (y < 300) {
-      tiles.y = 1
-    } else {
-      tiles.y = 2
+    for (let i = this.boardHeight; i >= 0; i--) {
+      if (i * 150 < y) {
+        tiles.y = i
+        break
+      }
     }
 
     return { x: tiles.x, y: tiles.y }

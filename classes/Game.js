@@ -1,42 +1,54 @@
 class Game {
-  constructor({ tileSize }) {
+  constructor({ tileSize, boardWidth, boardHeight }) {
+    this.boardWidth = boardWidth
+    this.boardHeight = boardHeight
+
     this.tileSize = tileSize
-    this.boardSize = this.tileSize * 3
+    this.boardSize = {
+      width: this.tileSize * this.boardWidth,
+      height: this.tileSize * this.boardHeight,
+    }
 
     this.canvas = document.querySelector('canvas')
     this.context = this.canvas.getContext('2d')
 
-    this.canvas.width = this.boardSize
-    this.canvas.height = this.boardSize
+    this.canvas.width = this.boardSize.width
+    this.canvas.height = this.boardSize.height
 
     this.ai = new AI()
     this.player = new Player({
       canvas: this.canvas,
+      boardWidth: this.boardWidth,
+      boardHeight: this.boardHeight,
       onMove: this.onPlayerMove.bind(this),
     })
 
-    this.board = [
-      [
-        new Tile({ position: { x: 0, y: 0 }, context: this.context, value: 0 }),
-        new Tile({ position: { x: 1, y: 0 }, context: this.context, value: 0 }),
-        new Tile({ position: { x: 2, y: 0 }, context: this.context, value: 0 }),
-      ],
-      [
-        new Tile({ position: { x: 0, y: 1 }, context: this.context, value: 0 }),
-        new Tile({ position: { x: 1, y: 1 }, context: this.context, value: 0 }),
-        new Tile({ position: { x: 2, y: 1 }, context: this.context, value: 0 }),
-      ],
-      [
-        new Tile({ position: { x: 0, y: 2 }, context: this.context, value: 0 }),
-        new Tile({ position: { x: 1, y: 2 }, context: this.context, value: 0 }),
-        new Tile({ position: { x: 2, y: 2 }, context: this.context, value: 0 }),
-      ],
-    ]
+    this.board = []
+    this.createTiles()
+  }
+
+  createTiles() {
+    for (let i = 0; i < this.boardHeight; i++) {
+      let newBoardRow = []
+      for (let j = 0; j < this.boardWidth; j++) {
+        newBoardRow.push(
+          new Tile({
+            position: { x: j, y: i },
+            context: this.context,
+            value: 0,
+          })
+        )
+      }
+
+      this.board.push(newBoardRow)
+    }
   }
 
   resetBoard() {
     this.board.forEach((row) => {
-      row.forEach((tile) => tile.reset())
+      row.forEach((tile) => {
+        tile.reset()
+      })
     })
 
     this.createBoard()
@@ -46,16 +58,19 @@ class Game {
     this.context.fillStyle = 'orange'
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-    for (let i = this.tileSize; i < this.boardSize; i += this.tileSize) {
+    for (let i = this.tileSize; i < this.boardSize.width; i += this.tileSize) {
       this.context.moveTo(i, 0)
-      this.context.lineTo(i, this.boardSize)
-      this.context.moveTo(0, i)
-      this.context.lineTo(this.boardSize, i)
-      this.context.strokeStyle = 'red'
-      this.context.lineWidth = 3
-      this.context.stroke()
+      this.context.lineTo(i, this.boardSize.height)
     }
-    console.log(this.board)
+
+    for (let i = this.tileSize; i < this.boardSize.height; i += this.tileSize) {
+      this.context.moveTo(0, i)
+      this.context.lineTo(this.boardSize.width, i)
+    }
+
+    // this.context.strokeStyle = 'red'
+    // this.context.lineWidth = 3
+    // this.context.stroke()
   }
 
   onPlayerMove(tile) {

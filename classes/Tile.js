@@ -6,6 +6,7 @@ class Tile {
   }
 
   reset() {
+    if (this.value === 0) return
     const { x, y } = this.position
     this.value = 0
     this.context.fillStyle = 'orange'
@@ -21,7 +22,6 @@ class Tile {
     this.context.lineTo(x * 150 + 25, y * 150 + 125)
 
     this.context.strokeStyle = 'red'
-
     this.context.stroke()
   }
 
