@@ -27,6 +27,20 @@ class Game {
     this.createTiles()
   }
 
+  resetGame() {
+    this.board = []
+    this.boardSize.width = this.tileSize * this.boardWidth
+    this.boardSize.height = this.tileSize * this.boardHeight
+
+    this.player.boardHeight = this.boardHeight
+    this.player.boardWidth = this.boardWidth
+
+    this.canvas.width = this.boardSize.width
+    this.canvas.height = this.boardSize.height
+
+    this.createTiles()
+  }
+
   createTiles() {
     for (let i = 0; i < this.boardHeight; i++) {
       let newBoardRow = []
@@ -42,14 +56,6 @@ class Game {
 
       this.board.push(newBoardRow)
     }
-  }
-
-  resetBoard() {
-    this.board.forEach((row) => {
-      row.forEach((tile) => {
-        tile.reset()
-      })
-    })
   }
 
   createBoard() {

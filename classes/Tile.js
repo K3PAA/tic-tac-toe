@@ -14,7 +14,7 @@ class Tile {
     const { x, y } = this.position
     this.value = 0
     this.context.fillStyle = 'orange'
-    this.context.fillRect(x * 150 + 3, y * 150 + 3, 147, 147)
+    this.context.fillRect(x * 150 + 3, y * 150 + 3, 144, 144)
   }
 
   drawCross() {
