@@ -1,9 +1,14 @@
 class Game {
-  constructor({ tileSize, boardWidth, boardHeight }) {
+  constructor({ tileSize, boardWidth, boardHeight, bestOf, timeForMove }) {
     this.boardWidth = boardWidth
     this.boardHeight = boardHeight
 
+    this.totalRounds = bestOf
+    this.currentRound = 0
+    this.timeForMove = timeForMove
+
     this.tileSize = tileSize
+
     this.boardSize = {
       width: this.tileSize * this.boardWidth,
       height: this.tileSize * this.boardHeight,
@@ -80,10 +85,37 @@ class Game {
   onPlayerMove(tile) {
     if (this.board[tile.y][tile.x].value === 0) {
       this.board[tile.y][tile.x].value = 1
+      this.checkForWin(1)
       const aiTile = this.ai.move(this.board)
       if (aiTile) {
         this.board[aiTile.y][aiTile.x].value = 2
+        this.checkForWin(2)
       }
     }
+  }
+
+  checkForWin(val) {
+    let colNum = [0, 0, 0]
+    let crossDown = 0
+    let crossUp = 0
+
+    this.board.forEach((tileRow, y) => {
+      if (tileRow[y].value === val) crossDown++
+      if (tileRow[2 - y].value === val) crossUp++
+      let rowNum = 0
+      tileRow.forEach((tile, i) => {
+        if (tile.value === val) {
+          rowNum++
+          colNum[i]++
+        }
+      })
+      if (rowNum === 3 || crossDown === 3 || crossUp === 3)
+        console.log(`${val} won`)
+    })
+    colNum.forEach((item) => {
+      if (item === 3) {
+        console.log(`${val} won`)
+      }
+    })
   }
 }

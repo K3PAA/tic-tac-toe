@@ -7,7 +7,7 @@ const playWithAI = document.querySelector('.ai-btn')
 
 const game = new Game({
   bestOf: 3,
-  timeToMove: 3,
+  timeForMove: 3,
   tileSize: 150,
   boardHeight: 3,
   boardWidth: 3,
@@ -53,7 +53,7 @@ playWithAI.addEventListener('click', () => {
 
   game.boardHeight = height
   game.boardWidth = width
-  game.timeToMove = gameTime.value
+  game.timeForMove = gameTime.value
   game.bestOf = bestOf.value
 
   game.resetGame()
