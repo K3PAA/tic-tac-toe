@@ -95,6 +95,7 @@ class Game {
   }
 
   checkForWin(val) {
+    // prawo/ góra
     let colNum = Array.from({ length: this.boardWidth }, () => 0)
 
     for (let i = 0; i < this.board.length; i++) {
@@ -123,11 +124,13 @@ class Game {
       }
     }
 
+    // skosy
     for (let j = 0; j < this.boardWidth - 2; j++) {
       for (let z = 0; z < this.boardHeight - 2; z++) {
+        //  ile wystąpiło powtórzeń
         let crossDown = 0
         let crossUp = 0
-
+        // sprawdzanie po koleji czy wystąpiło w tablicy
         for (let y = 0; y < 3; y++) {
           if (this.board[this.boardHeight - z - y - 1][y + j].value === val) {
             crossUp++
@@ -140,7 +143,7 @@ class Game {
             if (crossDown < 3) crossDown = 0
           }
         }
-        if (crossDown >= 3 || crossUp) {
+        if (crossDown >= 3 || crossUp >= 3) {
           console.log(`${val} won`)
         }
       }
