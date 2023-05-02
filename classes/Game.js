@@ -95,27 +95,55 @@ class Game {
   }
 
   checkForWin(val) {
-    let colNum = [0, 0, 0]
-    let crossDown = 0
-    let crossUp = 0
+    let colNum = Array.from({ length: this.boardWidth }, () => 0)
 
-    this.board.forEach((tileRow, y) => {
-      if (tileRow[y].value === val) crossDown++
-      if (tileRow[2 - y].value === val) crossUp++
+    for (let i = 0; i < this.board.length; i++) {
+      const row = this.board[i]
+
       let rowNum = 0
-      tileRow.forEach((tile, i) => {
-        if (tile.value === val) {
+
+      for (let y = 0; y < row.length; y++) {
+        if (row[y].value === val) {
           rowNum++
-          colNum[i]++
+          colNum[y]++
+        } else {
+          if (colNum[y] < 3) colNum[y] = 0
+          if (rowNum < 3) rowNum = 0
         }
-      })
-      if (rowNum === 3 || crossDown === 3 || crossUp === 3)
-        console.log(`${val} won`)
-    })
-    colNum.forEach((item) => {
-      if (item === 3) {
+      }
+
+      if (rowNum >= 3) {
         console.log(`${val} won`)
       }
-    })
+    }
+
+    for (let j = 0; j < colNum.length; j++) {
+      if (colNum[j] >= 3) {
+        console.log(`${val} won`)
+      }
+    }
+
+    for (let j = 0; j < this.boardWidth - 2; j++) {
+      for (let z = 0; z < this.boardHeight - 2; z++) {
+        let crossDown = 0
+        let crossUp = 0
+
+        for (let y = 0; y < 3; y++) {
+          if (this.board[this.boardHeight - z - y - 1][y + j].value === val) {
+            crossUp++
+          } else {
+            if (crossUp < 3) crossUp = 0
+          }
+          if (this.board[y + z][y + j].value === val) {
+            crossDown++
+          } else {
+            if (crossDown < 3) crossDown = 0
+          }
+        }
+        if (crossDown >= 3 || crossUp) {
+          console.log(`${val} won`)
+        }
+      }
+    }
   }
 }
