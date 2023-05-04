@@ -1,6 +1,7 @@
 class Tile {
-  constructor({ position, context, value }) {
+  constructor({ position, tileSize, context, value }) {
     this.position = position
+    this.tileSize = tileSize
     this.value = value
     this.context = context
   }
@@ -13,17 +14,34 @@ class Tile {
   drawEmpty() {
     const { x, y } = this.position
     this.value = 0
-    this.context.fillStyle = 'orange'
-    this.context.fillRect(x * 150 + 3, y * 150 + 3, 144, 144)
+    this.context.fillStyle = 'rgba(0,0,0,0)'
+    this.context.fillRect(
+      x * this.tileSize + 3,
+      y * this.tileSize + 3,
+      this.tileSize - 6,
+      this.tileSize - 6
+    )
   }
 
   drawCross() {
     const { x, y } = this.position
-    this.context.moveTo(x * 150 + 25, y * 150 + 25)
-    this.context.lineTo(x * 150 + 125, y * 150 + 125)
+    this.context.moveTo(
+      x * this.tileSize + this.tileSize * (1 / 6),
+      y * this.tileSize + this.tileSize * (1 / 6)
+    )
+    this.context.lineTo(
+      x * this.tileSize + this.tileSize * (5 / 6),
+      y * this.tileSize + this.tileSize * (5 / 6)
+    )
 
-    this.context.moveTo(x * 150 + 125, y * 150 + 25)
-    this.context.lineTo(x * 150 + 25, y * 150 + 125)
+    this.context.moveTo(
+      x * this.tileSize + this.tileSize * (5 / 6),
+      y * this.tileSize + this.tileSize * (1 / 6)
+    )
+    this.context.lineTo(
+      x * this.tileSize + this.tileSize * (1 / 6),
+      y * this.tileSize + this.tileSize * (5 / 6)
+    )
 
     this.context.strokeStyle = 'red'
     this.context.stroke()
@@ -33,7 +51,14 @@ class Tile {
     const { x, y } = this.position
 
     this.context.beginPath()
-    this.context.arc(x * 150 + 75, y * 150 + 75, 50, 0, 2 * Math.PI, false)
+    this.context.arc(
+      x * this.tileSize + this.tileSize / 2,
+      y * this.tileSize + this.tileSize / 2,
+      this.tileSize * (1 / 3),
+      0,
+      2 * Math.PI,
+      false
+    )
 
     this.context.stroke()
   }

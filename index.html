@@ -8,30 +8,55 @@
     <title>Tic Tac Toe</title>
   </head>
   <body>
-    <div class="menu">
-      <h1>TIC TAC TOE</h1>
-      <input placeholder="Time for move" type="number" min="2" id="gameTime" />
+    <button class="reset-btn">reset</button>
+    <div class="modal">
+      <div class="menu">
+        <h1>TIC TAC TOE</h1>
+        <input
+          placeholder="Time for move"
+          type="number"
+          min="2"
+          id="gameTime"
+        />
 
-      <select name="boardSizes" id="boardSizes">
-        <option value="3x3">3 x 3</option>
-        <option value="3x5">3 x 5</option>
-        <option value="4x4">4 x 4</option>
-      </select>
+        <select name="boardSizes" id="boardSizes">
+          <option value="3x3">3 x 3</option>
+          <option value="3x5">3 x 5</option>
+          <option value="4x4">4 x 4</option>
+        </select>
 
-      <select name="bestOf" id="bestOf">
-        <option value="1">1</option>
-        <option value="3">3</option>
-        <option value="5">5</option>
-        <option value="7">7</option>
-      </select>
+        <select name="bestOf" id="bestOf">
+          <option value="1">1</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="7">7</option>
+        </select>
 
-      <button class="btn">Play By Yourself</button>
-      <button class="btn ai-btn">Play With AI</button>
-      <button class="btn">Play With Friend</button>
-      <button class="btn reset-btn">Reset</button>
+        <button class="btn play-btn">Play By Yourself</button>
+        <button class="btn play-btn ai-btn">Play With AI</button>
+        <button class="btn play-btn">Play With Friend</button>
+        <button class="btn reset-btn">How to Play</button>
+      </div>
     </div>
 
-    <canvas></canvas>
+    <div class="game-display">
+      <h1 class="score-text playing">
+        You: <span class="player-score">0</span>
+      </h1>
+      <div class="center-info">
+        <h3 class="timeForMove">10s</h3>
+        <h1 class="move-info"><span class="whoIsMoving">Your</span> move</h1>
+        <canvas></canvas>
+      </div>
+
+      <div class="left-side">
+        <h1 class="score-text">AI: <span class="enemy-score">0</span></h1>
+
+        <div class="round-info">
+          <p>round: 0 / <span class="round-amount">7</span></p>
+        </div>
+      </div>
+    </div>
 
     <script src="./classes/AI.js"></script>
     <script src="./classes/Player.js"></script>

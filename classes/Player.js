@@ -1,8 +1,9 @@
 class Player {
-  constructor({ canvas, onMove, boardWidth, boardHeight }) {
+  constructor({ canvas, onMove, tileSize, boardWidth, boardHeight }) {
     this.canvas = canvas
     this.boardHeight = boardHeight
     this.boardWidth = boardWidth
+    this.tileSize = tileSize
     this.onMove = onMove
 
     this.canvas.addEventListener('click', (e) => this.onClick(e))
@@ -17,14 +18,14 @@ class Player {
     let tiles = { x: 0, y: 0 }
 
     for (let i = this.boardWidth; i >= 0; i--) {
-      if (i * 150 < x) {
+      if (i * this.tileSize < x) {
         tiles.x = i
         break
       }
     }
 
     for (let i = this.boardHeight; i >= 0; i--) {
-      if (i * 150 < y) {
+      if (i * this.tileSize < y) {
         tiles.y = i
         break
       }

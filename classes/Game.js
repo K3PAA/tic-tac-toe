@@ -25,6 +25,7 @@ class Game {
       canvas: this.canvas,
       boardWidth: this.boardWidth,
       boardHeight: this.boardHeight,
+      tileSize: this.tileSize,
       onMove: this.onPlayerMove.bind(this),
     })
 
@@ -54,6 +55,7 @@ class Game {
           new Tile({
             position: { x: j, y: i },
             context: this.context,
+            tileSize: this.tileSize,
             value: 0,
           })
         )
@@ -64,9 +66,6 @@ class Game {
   }
 
   createBoard() {
-    this.context.fillStyle = 'orange'
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-
     for (let i = this.tileSize; i < this.boardSize.width; i += this.tileSize) {
       this.context.moveTo(i, 0)
       this.context.lineTo(i, this.boardSize.height)
