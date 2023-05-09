@@ -126,8 +126,8 @@ class Game {
     if (rowIndex > -1) return { player: this.board[rowIndex][0].value, lineType: 'row', lineName: rowIndex };
 
     // Check column by column
-    const trnaspondedBoard = this.board[0].map((col, i) => this.board.map(row => row[i]));
-    const columnIndex = trnaspondedBoard.findIndex(column => column.reduce(checkLine, {}).points === column.length);
+    const transpondedBoard = this.board[0].map((col, i) => this.board.map(row => row[i]));
+    const columnIndex = transpondedBoard.findIndex(column => column.reduce(checkLine, {}).points === column.length);
     if (columnIndex > -1) return { player: this.board[0][columnIndex].value, lineType: 'column', lineName: columnIndex };
 
     // Check diagonals - assumes that boardWidth === boardHeight
