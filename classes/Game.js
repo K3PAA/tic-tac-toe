@@ -5,7 +5,8 @@ class Game {
 
     this.totalRounds = bestOf
     this.currentRound = 0
-    this.timeForMove = timeForMove
+
+    this.staticTimeForMove = timeForMove
 
     this.tileSize = tileSize
 
@@ -14,26 +15,34 @@ class Game {
       height: this.tileSize * this.boardHeight,
     }
 
+    this.timeLeftForMoveDisplay = document.querySelector('.timeLeft')
     this.canvas = document.querySelector('canvas')
     this.context = this.canvas.getContext('2d')
 
     this.canvas.width = this.boardSize.width
     this.canvas.height = this.boardSize.height
 
-    this.ai = new AI()
+    this.ai = new AI({
+      timeForMove,
+      isMoving: false,
+    })
     this.player = new Player({
       canvas: this.canvas,
       boardWidth: this.boardWidth,
       boardHeight: this.boardHeight,
+      timeForMove,
       tileSize: this.tileSize,
       onMove: this.onPlayerMove.bind(this),
+      isMoving: true,
     })
+
+    this.currentRound = 0
 
     this.board = []
     this.createTiles()
   }
 
-  resetGame() {
+  resetBoard() {
     this.board = []
     this.boardSize.width = this.tileSize * this.boardWidth
     this.boardSize.height = this.tileSize * this.boardHeight
@@ -84,13 +93,31 @@ class Game {
   onPlayerMove(tile) {
     if (this.board[tile.y][tile.x].value === 0) {
       this.board[tile.y][tile.x].value = 1
-      this.checkForWin(1)
+      if (this.checkForWin(1)) this.player.updateScore()
+      this.player.isMoving = false
+      this.ai.isMoving = true
       const aiTile = this.ai.move(this.board)
       if (aiTile) {
         this.board[aiTile.y][aiTile.x].value = 2
-        this.checkForWin(2)
+        this.ai.isMoving = false
+        this.player.isMoving = true
+        if (this.checkForWin(2)) this.ai.updateScore()
       }
     }
+  }
+
+  timeDown() {
+    this.timeLeftForMoveDisplay.innerHTML = this.staticTimeForMove + 's'
+
+    const timer = setInterval(() => {
+      if (this.player.timeForMove >= 0 && this.player.isMoving) {
+        this.player.timeForMove--
+        this.timeLeftForMoveDisplay.innerHTML = this.timeForMove + 's'
+      } else {
+        this.timeLeftForMoveDisplay.innerHTML = '- - -'
+        clearInterval(timer)
+      }
+    }, 1000)
   }
 
   checkForWin(val) {
@@ -113,13 +140,13 @@ class Game {
       }
 
       if (rowNum >= 3) {
-        console.log(`${val} won`)
+        return true
       }
     }
 
     for (let j = 0; j < colNum.length; j++) {
       if (colNum[j] >= 3) {
-        console.log(`${val} won`)
+        return true
       }
     }
 
@@ -143,9 +170,10 @@ class Game {
           }
         }
         if (crossDown >= 3 || crossUp >= 3) {
-          console.log(`${val} won`)
+          return true
         }
       }
     }
+    return false
   }
 }

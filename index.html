@@ -11,7 +11,7 @@
     <button class="reset-btn">reset</button>
     <div class="modal">
       <div class="menu">
-        <h1>TIC TAC TOE</h1>
+        <h1 class="game-title">TIC TAC TOE</h1>
         <input
           placeholder="Time for move"
           type="number"
@@ -40,20 +40,22 @@
     </div>
 
     <div class="game-display">
-      <h1 class="score-text playing">
+      <h1 class="score-text playing" data-type="player">
         You: <span class="player-score">0</span>
       </h1>
       <div class="center-info">
-        <h3 class="timeForMove">10s</h3>
+        <h3 class="timeForMove"><span class="timeLeft">- - -</span></h3>
         <h1 class="move-info"><span class="whoIsMoving">Your</span> move</h1>
         <canvas></canvas>
       </div>
 
       <div class="left-side">
-        <h1 class="score-text">AI: <span class="enemy-score">0</span></h1>
+        <h1 class="score-text" data-type="enemy">
+          AI: <span class="enemy-score">0</span>
+        </h1>
 
         <div class="round-info">
-          <p>round: 0 / <span class="round-amount">7</span></p>
+          <p>round: <span class="round-amount">0</span> / 7</p>
         </div>
       </div>
     </div>

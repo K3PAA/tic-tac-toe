@@ -1,17 +1,33 @@
 class Player {
-  constructor({ canvas, onMove, tileSize, boardWidth, boardHeight }) {
+  constructor({
+    canvas,
+    onMove,
+    tileSize,
+    boardWidth,
+    boardHeight,
+    timeForMove,
+    isMoving,
+  }) {
     this.canvas = canvas
     this.boardHeight = boardHeight
     this.boardWidth = boardWidth
     this.tileSize = tileSize
     this.onMove = onMove
-
+    this.score = 0
+    this.timeForMove = timeForMove
+    this.isMoving = isMoving
+    this.scoreDisplay = document.querySelector('.player-score')
     this.canvas.addEventListener('click', (e) => this.onClick(e))
   }
 
   onClick(e) {
     const tile = this.getTilesPos({ x: e.offsetX, y: e.offsetY })
     this.onMove(tile)
+  }
+
+  updateScore() {
+    this.score++
+    this.scoreDisplay.innerHTML = this.score
   }
 
   getTilesPos({ x, y }) {

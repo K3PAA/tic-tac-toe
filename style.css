@@ -99,16 +99,33 @@ canvas {
 .move-info {
   text-transform: uppercase;
   font-size: 2.25rem;
-  background: #1c92d2; /* fallback for old browsers */
+  background: #7f00ff; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
-    #f2fcfe,
-    #1c92d2
+    #e100ff,
+    #7f00ff
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to right,
-    #f2fcfe,
-    #1c92d2
+    #e100ff,
+    #7f00ff
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.game-title {
+  background: #7f00ff; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #e100ff,
+    #7f00ff
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #e100ff,
+    #7f00ff
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   -webkit-background-clip: text;

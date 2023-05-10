@@ -10,6 +10,9 @@ const playButtons = document.querySelectorAll('.play-btn')
 const resetButton = document.querySelector('.reset-btn')
 const playWithAI = document.querySelector('.ai-btn')
 
+const currentRoundNumberDisply = document.querySelector('.round-amount')
+const scoreTexts = document.querySelectorAll('.score-text')
+
 resetButton.addEventListener('click', () => {
   console.clear()
   game.resetGame()
@@ -36,6 +39,20 @@ const gameAnimation = () => {
       element.draw()
     })
   })
+
+  if (game.player.isMoving) {
+    scoreTexts.forEach((text) => {
+      if (text.dataset.type === 'player') {
+        text.classList.add('playing')
+      } else text.classList.remove('playing')
+    })
+  } else {
+    scoreTexts.forEach((text) => {
+      if (text.dataset.type === 'enemy') {
+        text.classList.add('playing')
+      } else text.classList.remove('playing')
+    })
+  }
 }
 
 gameAnimation()
@@ -64,10 +81,11 @@ playButtons.forEach((button) => {
 
     game.boardHeight = height
     game.boardWidth = width
-    game.timeForMove = gameTime.value
+    game.timeForMove = gameTime.value ? gameTime.value : 5
     game.bestOf = bestOf.value
 
-    game.resetGame()
+    game.timeDown()
+    game.resetBoard()
   })
 })
 
