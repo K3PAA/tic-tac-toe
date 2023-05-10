@@ -84,68 +84,64 @@ class Game {
   onPlayerMove(tile) {
     if (this.board[tile.y][tile.x].value === 0) {
       this.board[tile.y][tile.x].value = 1
-      this.checkForWin(1)
-      const aiTile = this.ai.move(this.board)
-      if (aiTile) {
-        this.board[aiTile.y][aiTile.x].value = 2
-        this.checkForWin(2)
+
+      let result = this.checkForWin();
+
+      if (result) {
+        // Player won
+        this.consoleWinner(result);
+      } else {
+        const aiTile = this.ai.move(this.board)
+
+        if (aiTile) {
+          this.board[aiTile.y][aiTile.x].value = 2
+          result = this.checkForWin()
+
+          if (result) {
+            // Bot won
+            this.consoleWinner(result);
+          }
+        }
       }
     }
   }
 
-  checkForWin(val) {
-    // prawo/ góra
-    let colNum = Array.from({ length: this.boardWidth }, () => 0)
+  consoleWinner({ player, lineType, lineName }) {
+    console.log(`Player ${player} won in ${lineType} ${lineName}`);
+  }
 
-    for (let i = 0; i < this.board.length; i++) {
-      const row = this.board[i]
-
-      let rowNum = 0
-
-      for (let y = 0; y < row.length; y++) {
-        if (row[y].value === val) {
-          rowNum++
-          colNum[y]++
-        } else {
-          if (colNum[y] < 3) colNum[y] = 0
-          if (rowNum < 3) rowNum = 0
-        }
+  checkForWin() {
+    const checkLine = (result, tile) => {
+      if (tile.value) {
+        if (!result.type) {
+          result.type = tile.value;
+          result.points = 1;
+        } else if (tile.value === result.type) result.points++;
       }
+      return result;
+    };
 
-      if (rowNum >= 3) {
-        console.log(`${val} won`)
-      }
-    }
+    // Check row by row
+    const rowIndex = this.board.findIndex(row => row.reduce(checkLine, {}).points === row.length);
+    if (rowIndex > -1) return { player: this.board[rowIndex][0].value, lineType: 'row', lineName: rowIndex };
 
-    for (let j = 0; j < colNum.length; j++) {
-      if (colNum[j] >= 3) {
-        console.log(`${val} won`)
-      }
-    }
+    // Check column by column
+    const transpondedBoard = this.board[0].map((col, i) => this.board.map(row => row[i]));
+    const columnIndex = transpondedBoard.findIndex(column => column.reduce(checkLine, {}).points === column.length);
+    if (columnIndex > -1) return { player: this.board[0][columnIndex].value, lineType: 'column', lineName: columnIndex };
 
-    // skosy
-    for (let j = 0; j < this.boardWidth - 2; j++) {
-      for (let z = 0; z < this.boardHeight - 2; z++) {
-        //  ile wystąpiło powtórzeń
-        let crossDown = 0
-        let crossUp = 0
-        // sprawdzanie po koleji czy wystąpiło w tablicy
-        for (let y = 0; y < 3; y++) {
-          if (this.board[this.boardHeight - z - y - 1][y + j].value === val) {
-            crossUp++
-          } else {
-            if (crossUp < 3) crossUp = 0
-          }
-          if (this.board[y + z][y + j].value === val) {
-            crossDown++
-          } else {
-            if (crossDown < 3) crossDown = 0
-          }
-        }
-        if (crossDown >= 3 || crossUp >= 3) {
-          console.log(`${val} won`)
-        }
-      }
+    // Check diagonals - assumes that boardWidth === boardHeight
+    const diagonalIndex = [
+      this.board.reduce((diagonal, row, i) => { diagonal.push(row[i]); return diagonal; }, []), // Diagonal top left <=> bottom right
+      this.board.reduce((diagonal, row, i) => { diagonal.push(row[row.length - i - 1]); return diagonal; }, []) // Diagonal top right <=> bottom left
+    ].findIndex(diagonal => diagonal.reduce(checkLine, {}).points === diagonal.length);
+
+    if (diagonalIndex > -1) {
+      return {
+        lineType: 'diagonal',
+        player: this.board[0][diagonalIndex === 0 ? 0 : this.boardWidth - 1].value,
+        lineName: diagonalIndex === 0 ? 'top left <=> bottom right' : 'top right <=> bottom left'
+      };
     }
   }
 }
