@@ -23,7 +23,7 @@ const userWidth =
 
 const game = new Game({
   bestOf: 3,
-  timeForMove: 3,
+  timeForMove: 5,
   tileSize: userWidth,
   boardHeight: 3,
   boardWidth: 3,
@@ -73,18 +73,13 @@ playButtons.forEach((button) => {
         width = 4
         height = 4
         break
-      case '3x5':
-        width = 5
-        height = 3
-        break
     }
 
     game.boardHeight = height
     game.boardWidth = width
-    game.timeForMove = gameTime.value ? gameTime.value : 5
-    game.bestOf = bestOf.value
+    game.staticTimeForMove = gameTime.value ? gameTime.value : 5
+    game.totalRounds = bestOf.value
 
-    game.timeDown()
     game.resetBoard()
   })
 })

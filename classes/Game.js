@@ -4,6 +4,7 @@ class Game {
     this.boardHeight = boardHeight
 
     this.totalRounds = bestOf
+    this.roundActive = false
     this.currentRound = 0
 
     this.staticTimeForMove = timeForMove
@@ -16,6 +17,8 @@ class Game {
     }
 
     this.timeLeftForMoveDisplay = document.querySelector('.timeLeft')
+    this.currentRoundDisplay = document.querySelector('.round-current')
+    this.totalRoundDisplay = document.querySelector('.round-amount')
     this.canvas = document.querySelector('canvas')
     this.context = this.canvas.getContext('2d')
 
@@ -23,20 +26,21 @@ class Game {
     this.canvas.height = this.boardSize.height
 
     this.ai = new AI({
-      timeForMove,
+      timeForMove: this.staticTimeForMove,
       isMoving: false,
     })
     this.player = new Player({
       canvas: this.canvas,
       boardWidth: this.boardWidth,
       boardHeight: this.boardHeight,
-      timeForMove,
+      timeForMove: this.staticTimeForMove,
       tileSize: this.tileSize,
       onMove: this.onPlayerMove.bind(this),
       isMoving: true,
     })
 
     this.currentRound = 0
+    this.timer = undefined
 
     this.board = []
     this.createTiles()
@@ -54,6 +58,11 @@ class Game {
     this.canvas.height = this.boardSize.height
 
     this.createTiles()
+    this.totalRoundDisplay.innerHTML = this.totalRounds
+    this.roundActive = true
+    this.timeDown(this.player)
+
+    console.log(this)
   }
 
   createTiles() {
@@ -66,7 +75,7 @@ class Game {
             context: this.context,
             tileSize: this.tileSize,
             value: 0,
-          })
+          }),
         )
       }
 
@@ -90,25 +99,37 @@ class Game {
     this.context.stroke()
   }
 
-  onPlayerMove(tile) {
-    if (this.board[tile.y][tile.x].value === 0) {
-      this.board[tile.y][tile.x].value = 1
+  togglePlayer() {
+    this.player.isMoving = !this.player.isMoving
+    this.ai.isMoving = !this.ai.isMoving
+    this.player.timeForMove = this.staticTimeForMove
+    this.ai.timeForMove = this.staticTimeForMove
+  }
 
-      let result = this.checkForWin();
+  onPlayerMove(tile) {
+    if (this.board[tile.y][tile.x].value === 0 && this.roundActive) {
+      this.board[tile.y][tile.x].value = 1
+      this.togglePlayer()
+      this.clearTimeDown()
+      this.timeDown(this.ai)
+      let result = this.checkForWin()
 
       if (result) {
         // Player won
-        this.consoleWinner(result);
+        this.consoleWinner(result)
       } else {
         const aiTile = this.ai.move(this.board)
 
         if (aiTile) {
           this.board[aiTile.y][aiTile.x].value = 2
+          this.togglePlayer()
+          this.clearTimeDown()
+          this.timeDown(this.player)
           result = this.checkForWin()
 
           if (result) {
             // Bot won
-            this.consoleWinner(result);
+            this.consoleWinner(result)
           }
         }
       }
@@ -116,74 +137,94 @@ class Game {
   }
 
   consoleWinner({ player, lineType, lineName }) {
-    console.log(`Player ${player} won in ${lineType} ${lineName}`);
+    console.log(`Player ${player} won in ${lineType} ${lineName}`)
+    this.currentRound++
+    this.roundActive = false
+    this.currentRoundDisplay.innerHTML = this.currentRound
   }
-  timeDown() {
+
+  timeDown(x) {
     this.timeLeftForMoveDisplay.innerHTML = this.staticTimeForMove + 's'
 
-    const timer = setInterval(() => {
-      if (this.player.timeForMove >= 0 && this.player.isMoving) {
-        this.player.timeForMove--
-        this.timeLeftForMoveDisplay.innerHTML = this.timeForMove + 's'
-      } else {
-        this.timeLeftForMoveDisplay.innerHTML = '- - -'
-        clearInterval(timer)
-      }
-    }, 1000)
+    if (!this.timer)
+      this.timer = setInterval(() => {
+        if (x.timeForMove > 0 && x.isMoving) {
+          x.timeForMove--
+          this.timeLeftForMoveDisplay.innerHTML = x.timeForMove + 's'
+        } else {
+          this.timeLeftForMoveDisplay.innerHTML = '- - -'
+          console.log('lost')
+          clearInterval(this.timer)
+          this.timer = undefined
+        }
+      }, 1000)
   }
 
-  checkForWin(val) {
-    // prawo/ góra
-    let colNum = Array.from({ length: this.boardWidth }, () => 0)
-
-    for (let i = 0; i < this.board.length; i++) {
-      const row = this.board[i]
-
-      let rowNum = 0
-
-      for (let y = 0; y < row.length; y++) {
-        if (row[y].value === val) {
-          rowNum++
-          colNum[y]++
-        } else {
-          if (colNum[y] < 3) colNum[y] = 0
-          if (rowNum < 3) rowNum = 0
-        }
-      }
+  clearTimeDown() {
+    clearInterval(this.timer)
+    this.timer = undefined
+  }
 
   checkForWin() {
     const checkLine = (result, tile) => {
       if (tile.value) {
         if (!result.type) {
-          result.type = tile.value;
-          result.points = 1;
-        } else if (tile.value === result.type) result.points++;
+          result.type = tile.value
+          result.points = 1
+        } else if (tile.value === result.type) result.points++
       }
-      return result;
-    };
+      return result
+    }
 
     // Check row by row
-    const rowIndex = this.board.findIndex(row => row.reduce(checkLine, {}).points === row.length);
-    if (rowIndex > -1) return { player: this.board[rowIndex][0].value, lineType: 'row', lineName: rowIndex };
+    const rowIndex = this.board.findIndex(
+      (row) => row.reduce(checkLine, {}).points === row.length,
+    )
+    if (rowIndex > -1)
+      return {
+        player: this.board[rowIndex][0].value,
+        lineType: 'row',
+        lineName: rowIndex,
+      }
 
     // Check column by column
-    const transpondedBoard = this.board[0].map((col, i) => this.board.map(row => row[i]));
-    const columnIndex = transpondedBoard.findIndex(column => column.reduce(checkLine, {}).points === column.length);
-    if (columnIndex > -1) return { player: this.board[0][columnIndex].value, lineType: 'column', lineName: columnIndex };
+    const transpondedBoard = this.board[0].map((col, i) =>
+      this.board.map((row) => row[i]),
+    )
+    const columnIndex = transpondedBoard.findIndex(
+      (column) => column.reduce(checkLine, {}).points === column.length,
+    )
+    if (columnIndex > -1)
+      return {
+        player: this.board[0][columnIndex].value,
+        lineType: 'column',
+        lineName: columnIndex,
+      }
 
     // Check diagonals - assumes that boardWidth === boardHeight
     const diagonalIndex = [
-      this.board.reduce((diagonal, row, i) => { diagonal.push(row[i]); return diagonal; }, []), // Diagonal top left <=> bottom right
-      this.board.reduce((diagonal, row, i) => { diagonal.push(row[row.length - i - 1]); return diagonal; }, []) // Diagonal top right <=> bottom left
-    ].findIndex(diagonal => diagonal.reduce(checkLine, {}).points === diagonal.length);
-  }
+      this.board.reduce((diagonal, row, i) => {
+        diagonal.push(row[i])
+        return diagonal
+      }, []), // Diagonal top left <=> bottom right
+      this.board.reduce((diagonal, row, i) => {
+        diagonal.push(row[row.length - i - 1])
+        return diagonal
+      }, []), // Diagonal top right <=> bottom left
+    ].findIndex(
+      (diagonal) => diagonal.reduce(checkLine, {}).points === diagonal.length,
+    )
 
     if (diagonalIndex > -1) {
       return {
         lineType: 'diagonal',
-        player: this.board[0][diagonalIndex === 0 ? 0 : this.boardWidth - 1].value,
-        lineName: diagonalIndex === 0 ? 'top left <=> bottom right' : 'top right <=> bottom left'
-      };
+        player: this.board[0][diagonalIndex === 0 ? 0 : this.boardWidth - 1]
+          .value,
+        lineName:
+          diagonalIndex === 0
+            ? 'top left <=> bottom right'
+            : 'top right <=> bottom left',
+      }
     }
   }
 }
