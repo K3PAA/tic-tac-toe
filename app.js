@@ -14,8 +14,8 @@ const currentRoundNumberDisply = document.querySelector('.round-amount')
 const scoreTexts = document.querySelectorAll('.score-text')
 
 resetButton.addEventListener('click', () => {
-  console.clear()
-  game.resetGame()
+  game.createBoard()
+  game.roundActive = true
 })
 
 const userWidth =
@@ -32,26 +32,23 @@ const game = new Game({
 const gameAnimation = () => {
   requestAnimationFrame(gameAnimation)
 
-  game.createBoard()
+  if (game.roundActive) {
+    game.createBoard()
+    game.drawTiles()
 
-  game.board.forEach((row) => {
-    row.forEach((element) => {
-      element.draw()
-    })
-  })
-
-  if (game.player.isMoving) {
-    scoreTexts.forEach((text) => {
-      if (text.dataset.type === 'player') {
-        text.classList.add('playing')
-      } else text.classList.remove('playing')
-    })
-  } else {
-    scoreTexts.forEach((text) => {
-      if (text.dataset.type === 'enemy') {
-        text.classList.add('playing')
-      } else text.classList.remove('playing')
-    })
+    if (game.player.isMoving) {
+      scoreTexts.forEach((text) => {
+        if (text.dataset.type === 'player') {
+          text.classList.add('playing')
+        } else text.classList.remove('playing')
+      })
+    } else {
+      scoreTexts.forEach((text) => {
+        if (text.dataset.type === 'enemy') {
+          text.classList.add('playing')
+        } else text.classList.remove('playing')
+      })
+    }
   }
 }
 

@@ -19,48 +19,54 @@ class Tile {
       x * this.tileSize + 3,
       y * this.tileSize + 3,
       this.tileSize - 6,
-      this.tileSize - 6
+      this.tileSize - 6,
     )
   }
 
   drawCross() {
     const { x, y } = this.position
+    this.context.beginPath()
+
     this.context.moveTo(
       x * this.tileSize + this.tileSize * (1 / 6),
-      y * this.tileSize + this.tileSize * (1 / 6)
+      y * this.tileSize + this.tileSize * (1 / 6),
     )
     this.context.lineTo(
       x * this.tileSize + this.tileSize * (5 / 6),
-      y * this.tileSize + this.tileSize * (5 / 6)
+      y * this.tileSize + this.tileSize * (5 / 6),
     )
 
     this.context.moveTo(
       x * this.tileSize + this.tileSize * (5 / 6),
-      y * this.tileSize + this.tileSize * (1 / 6)
+      y * this.tileSize + this.tileSize * (1 / 6),
     )
     this.context.lineTo(
       x * this.tileSize + this.tileSize * (1 / 6),
-      y * this.tileSize + this.tileSize * (5 / 6)
+      y * this.tileSize + this.tileSize * (5 / 6),
     )
 
-    this.context.strokeStyle = 'red'
+    this.context.strokeStyle = 'green'
     this.context.stroke()
+    this.context.closePath()
   }
 
   drawCircle() {
     const { x, y } = this.position
 
     this.context.beginPath()
+
     this.context.arc(
       x * this.tileSize + this.tileSize / 2,
       y * this.tileSize + this.tileSize / 2,
       this.tileSize * (1 / 3),
       0,
       2 * Math.PI,
-      false
+      false,
     )
 
+    this.context.strokeStyle = 'red'
     this.context.stroke()
+    this.context.closePath()
   }
 
   draw() {

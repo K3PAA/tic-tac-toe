@@ -25,6 +25,10 @@ class Game {
     this.canvas.width = this.boardSize.width
     this.canvas.height = this.boardSize.height
 
+    this.animate = new Animate({
+      context: this.context,
+    })
+
     this.ai = new AI({
       timeForMove: this.staticTimeForMove,
       isMoving: false,
@@ -61,8 +65,6 @@ class Game {
     this.totalRoundDisplay.innerHTML = this.totalRounds
     this.roundActive = true
     this.timeDown(this.player)
-
-    console.log(this)
   }
 
   createTiles() {
@@ -84,6 +86,8 @@ class Game {
   }
 
   createBoard() {
+    this.context.beginPath()
+
     for (let i = this.tileSize; i < this.boardSize.width; i += this.tileSize) {
       this.context.moveTo(i, 0)
       this.context.lineTo(i, this.boardSize.height)
@@ -97,6 +101,7 @@ class Game {
     this.context.strokeStyle = 'red'
     this.context.lineWidth = 3
     this.context.stroke()
+    this.context.closePath()
   }
 
   togglePlayer() {
@@ -136,11 +141,72 @@ class Game {
     }
   }
 
+  drawTiles() {
+    this.board.forEach((row) => {
+      row.forEach((element) => {
+        element.draw()
+      })
+    })
+  }
+
   consoleWinner({ player, lineType, lineName }) {
+    // player - 1 lub 2
+    // lineType - diagonal, top left <=> bottom right, top right <=> bottom left lub column
+    // lineName - 0, 1, 2, ...
     console.log(`Player ${player} won in ${lineType} ${lineName}`)
+
+    player === 1 ? this.player.updateScore() : this.ai.updateScore()
+
     this.currentRound++
     this.roundActive = false
     this.currentRoundDisplay.innerHTML = this.currentRound
+    this.drawTiles()
+    this.clearTimeDown()
+    this.drawEndingLine({ lineType, lineName })
+  }
+
+  drawEndingLine({ lineType, lineName }) {
+    switch (lineType) {
+      case 'diagonal':
+        switch (lineName) {
+          case 'top left <=> bottom right':
+            this.animate.lineAnimation({
+              from: { x: 0, y: 0 },
+              to: { x: this.canvas.width, y: this.canvas.height },
+              type: 'top left <=> bottom right',
+            })
+            break
+
+          case 'top right <=> bottom left':
+            this.animate.lineAnimation({
+              from: { x: 0, y: this.canvas.height },
+              to: { x: this.canvas.width, y: 0 },
+              type: 'top right <=> bottom left',
+            })
+            break
+        }
+        break
+
+      case 'row':
+        this.animate.lineAnimation({
+          from: { x: 0, y: lineName * this.tileSize + 0.5 * this.tileSize },
+          to: {
+            x: this.canvas.width,
+            y: lineName * this.tileSize + 0.5 * this.tileSize,
+          },
+        })
+        break
+
+      case 'column':
+        this.animate.lineAnimation({
+          from: { x: lineName * this.tileSize + 0.5 * this.tileSize, y: 0 },
+          to: {
+            x: lineName * this.tileSize + 0.5 * this.tileSize,
+            y: this.canvas.height,
+          },
+        })
+        break
+    }
   }
 
   timeDown(x) {
