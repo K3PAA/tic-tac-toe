@@ -1,3 +1,36 @@
+const specialNum = [
+  'zeroth',
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'sixth',
+  'seventh',
+  'eighth',
+  'ninth',
+  'tenth',
+  'eleventh',
+  'twelfth',
+  'thirteenth',
+  'fourteenth',
+  'fifteenth',
+  'sixteenth',
+  'seventeenth',
+  'eighteenth',
+  'nineteenth',
+]
+const decaNum = [
+  'twent',
+  'thirt',
+  'fort',
+  'fift',
+  'sixt',
+  'sevent',
+  'eight',
+  'ninet',
+]
+
 const grid = document.querySelector('#boardSizes')
 const bestOf = document.querySelector('#bestOf')
 const gameTime = document.querySelector('#gameTime')
@@ -27,6 +60,8 @@ const game = new Game({
   tileSize: userWidth,
   boardHeight: 3,
   boardWidth: 3,
+  decaNum: decaNum,
+  specialNum: specialNum,
 })
 
 const gameAnimation = () => {

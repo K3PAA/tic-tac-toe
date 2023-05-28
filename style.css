@@ -98,7 +98,7 @@ canvas {
 
 .move-info {
   text-transform: uppercase;
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   background: #7f00ff; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -140,5 +140,26 @@ canvas {
 }
 
 .score-text.playing {
+  opacity: 1;
+}
+
+.desc {
+  opacity: 0.5;
+}
+
+.end-game--info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  background-color: rgb(0, 0, 0);
+  padding: 30px;
+  opacity: 0;
+  min-height: 200px;
+  pointer-events: none;
+}
+
+.end-game--info.active {
   opacity: 1;
 }

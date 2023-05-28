@@ -6,6 +6,7 @@ class Player {
     boardWidth,
     boardHeight,
     timeForMove,
+    identyficator,
     isMoving,
   }) {
     this.canvas = canvas
@@ -14,6 +15,7 @@ class Player {
     this.tileSize = tileSize
     this.onMove = onMove
     this.score = 0
+    this.identyficator = identyficator
     this.timeForMove = timeForMove
     this.isMoving = isMoving
     this.scoreDisplay = document.querySelector('.player-score')
@@ -25,9 +27,13 @@ class Player {
     this.onMove(tile)
   }
 
+  displayScore() {
+    this.scoreDisplay.innerHTML = this.score
+  }
+
   updateScore() {
     this.score++
-    this.scoreDisplay.innerHTML = this.score
+    this.displayScore()
   }
 
   getTilesPos({ x, y }) {

@@ -1,5 +1,13 @@
 class Game {
-  constructor({ tileSize, boardWidth, boardHeight, bestOf, timeForMove }) {
+  constructor({
+    tileSize,
+    boardWidth,
+    boardHeight,
+    bestOf,
+    timeForMove,
+    decaNum,
+    specialNum,
+  }) {
     this.boardWidth = boardWidth
     this.boardHeight = boardHeight
 
@@ -16,9 +24,14 @@ class Game {
       height: this.tileSize * this.boardHeight,
     }
 
+    this.endGameInfo = document.querySelector('.end-game--info')
+    this.menu = document.querySelector('.menu')
+    this.modal = document.querySelector('.modal')
     this.timeLeftForMoveDisplay = document.querySelector('.timeLeft')
     this.currentRoundDisplay = document.querySelector('.round-current')
     this.totalRoundDisplay = document.querySelector('.round-amount')
+    this.descDisplay = document.querySelector('.desc')
+    this.generalInfoDisplay = document.querySelector('.move-info')
     this.canvas = document.querySelector('canvas')
     this.context = this.canvas.getContext('2d')
 
@@ -27,13 +40,17 @@ class Game {
 
     this.animate = new Animate({
       context: this.context,
+      canvas: this.canvas,
     })
 
     this.ai = new AI({
+      identyficator: 2,
       timeForMove: this.staticTimeForMove,
       isMoving: false,
     })
+
     this.player = new Player({
+      identyficator: 1,
       canvas: this.canvas,
       boardWidth: this.boardWidth,
       boardHeight: this.boardHeight,
@@ -43,11 +60,38 @@ class Game {
       isMoving: true,
     })
 
-    this.currentRound = 0
     this.timer = undefined
+    this.decaNum = decaNum
+    this.specialNum = specialNum
 
     this.board = []
     this.createTiles()
+  }
+
+  updateGeneralInfo(text) {
+    this.generalInfoDisplay.innerHTML = text
+  }
+
+  updateDesc(text) {
+    this.descDisplay.innerHTML = text
+  }
+
+  stringifyNumber(n) {
+    if (n < 20) return this.specialNum[n]
+    if (n % 10 === 0) return this.decaNum[Math.floor(n / 10) - 2] + 'ieth'
+    return this.decaNum[Math.floor(n / 10) - 2] + 'y-' + this.specialNum[n % 10]
+  }
+
+  resetRound() {
+    this.board = []
+    this.createTiles()
+    this.roundActive = true
+    this.drawTiles()
+    this.player.timeForMove = this.staticTimeForMove
+    this.ai.timeForMove = this.staticTimeForMove
+    this.player.isMoving = true
+    this.ai.isMoving = false
+    this.timeDown(this.player)
   }
 
   resetBoard() {
@@ -64,6 +108,10 @@ class Game {
     this.createTiles()
     this.totalRoundDisplay.innerHTML = this.totalRounds
     this.roundActive = true
+    this.player.timeForMove = this.staticTimeForMove
+    this.ai.timeForMove = this.staticTimeForMove
+    this.player.isMoving = true
+    this.ai.isMoving = false
     this.timeDown(this.player)
   }
 
@@ -77,7 +125,7 @@ class Game {
             context: this.context,
             tileSize: this.tileSize,
             value: 0,
-          }),
+          })
         )
       }
 
@@ -109,11 +157,16 @@ class Game {
     this.ai.isMoving = !this.ai.isMoving
     this.player.timeForMove = this.staticTimeForMove
     this.ai.timeForMove = this.staticTimeForMove
+
+    let text = this.player.isMoving
+      ? 'Player 1 is moving'
+      : 'Player 2 is moving'
+    this.updateGeneralInfo(text)
   }
 
   onPlayerMove(tile) {
     if (this.board[tile.y][tile.x].value === 0 && this.roundActive) {
-      this.board[tile.y][tile.x].value = 1
+      this.board[tile.y][tile.x].value = this.player.identyficator
       this.togglePlayer()
       this.clearTimeDown()
       this.timeDown(this.ai)
@@ -121,12 +174,12 @@ class Game {
 
       if (result) {
         // Player won
-        this.consoleWinner(result)
+        this.finishRound(result)
       } else {
         const aiTile = this.ai.move(this.board)
 
         if (aiTile) {
-          this.board[aiTile.y][aiTile.x].value = 2
+          this.board[aiTile.y][aiTile.x].value = this.ai.identyficator
           this.togglePlayer()
           this.clearTimeDown()
           this.timeDown(this.player)
@@ -134,7 +187,7 @@ class Game {
 
           if (result) {
             // Bot won
-            this.consoleWinner(result)
+            this.finishRound(result)
           }
         }
       }
@@ -149,20 +202,31 @@ class Game {
     })
   }
 
-  consoleWinner({ player, lineType, lineName }) {
+  finishRound({ player, lineType = null, lineName = null, reason = null }) {
     // player - 1 lub 2
     // lineType - diagonal, top left <=> bottom right, top right <=> bottom left lub column
     // lineName - 0, 1, 2, ...
-    console.log(`Player ${player} won in ${lineType} ${lineName}`)
 
-    player === 1 ? this.player.updateScore() : this.ai.updateScore()
+    player === this.player.identyficator
+      ? this.player.updateScore()
+      : this.ai.updateScore()
 
     this.currentRound++
     this.roundActive = false
     this.currentRoundDisplay.innerHTML = this.currentRound
     this.drawTiles()
     this.clearTimeDown()
-    this.drawEndingLine({ lineType, lineName })
+    this.updateGeneralInfo(
+      `Player ${player} won ${this.stringifyNumber(this.currentRound)} round`
+    )
+    if (!reason) {
+      this.updateDesc(`${lineType} ${lineName}`)
+      this.drawEndingLine({ lineType, lineName })
+    } else {
+      this.updateDesc(reason)
+    }
+
+    this.nextRoundTimeDown()
   }
 
   drawEndingLine({ lineType, lineName }) {
@@ -219,11 +283,58 @@ class Game {
           this.timeLeftForMoveDisplay.innerHTML = x.timeForMove + 's'
         } else {
           this.timeLeftForMoveDisplay.innerHTML = '- - -'
-          console.log('lost')
+          if (x.identyficator === 1) {
+            this.finishRound({ player: 2, reason: 'on time' })
+          } else {
+            this.finishRound({ player: 1, reason: 'on time' })
+          }
+
           clearInterval(this.timer)
           this.timer = undefined
         }
       }, 1000)
+  }
+
+  nextRoundTimeDown() {
+    let x = 3
+    this.timeLeftForMoveDisplay.innerHTML = x + 's'
+
+    let int = setInterval(() => {
+      x--
+      this.timeLeftForMoveDisplay.innerHTML = x + 's'
+      if (x === 0) {
+        clearInterval(int)
+        int = undefined
+        Number(this.currentRound) === Number(this.totalRounds)
+          ? this.endGame()
+          : this.resetRound()
+      }
+    }, 1000)
+  }
+
+  resetPlayersScores() {
+    this.player.score = 0
+    this.ai.score = 0
+    this.player.displayScore()
+    this.ai.displayScore()
+  }
+
+  endGame() {
+    this.menu.classList.remove('off')
+    this.modal.classList.remove('off')
+    this.currentRound = 0
+    this.currentRoundDisplay.innerHTML = this.currentRound
+
+    const winner = this.player.score > this.ai.score ? 'player 1' : 'player 2'
+
+    this.endGameInfo.classList.add('active')
+    this.endGameInfo.innerHTML = `${winner} won , ${this.player.score} to ${this.ai.score}`
+
+    this.resetPlayersScores()
+
+    setTimeout(() => {
+      this.endGameInfo.classList.remove('active')
+    }, 4000)
   }
 
   clearTimeDown() {
@@ -244,7 +355,7 @@ class Game {
 
     // Check row by row
     const rowIndex = this.board.findIndex(
-      (row) => row.reduce(checkLine, {}).points === row.length,
+      (row) => row.reduce(checkLine, {}).points === row.length
     )
     if (rowIndex > -1)
       return {
@@ -255,10 +366,10 @@ class Game {
 
     // Check column by column
     const transpondedBoard = this.board[0].map((col, i) =>
-      this.board.map((row) => row[i]),
+      this.board.map((row) => row[i])
     )
     const columnIndex = transpondedBoard.findIndex(
-      (column) => column.reduce(checkLine, {}).points === column.length,
+      (column) => column.reduce(checkLine, {}).points === column.length
     )
     if (columnIndex > -1)
       return {
@@ -278,14 +389,14 @@ class Game {
         return diagonal
       }, []), // Diagonal top right <=> bottom left
     ].findIndex(
-      (diagonal) => diagonal.reduce(checkLine, {}).points === diagonal.length,
+      (diagonal) => diagonal.reduce(checkLine, {}).points === diagonal.length
     )
 
     if (diagonalIndex > -1) {
       return {
         lineType: 'diagonal',
-        player: this.board[0][diagonalIndex === 0 ? 0 : this.boardWidth - 1]
-          .value,
+        player:
+          this.board[0][diagonalIndex === 0 ? 0 : this.boardWidth - 1].value,
         lineName:
           diagonalIndex === 0
             ? 'top left <=> bottom right'

@@ -14,12 +14,11 @@ class Tile {
   drawEmpty() {
     const { x, y } = this.position
     this.value = 0
-    this.context.fillStyle = 'rgba(0,0,0,0)'
-    this.context.fillRect(
+    this.context.clearRect(
       x * this.tileSize + 3,
       y * this.tileSize + 3,
       this.tileSize - 6,
-      this.tileSize - 6,
+      this.tileSize - 6
     )
   }
 
@@ -29,20 +28,20 @@ class Tile {
 
     this.context.moveTo(
       x * this.tileSize + this.tileSize * (1 / 6),
-      y * this.tileSize + this.tileSize * (1 / 6),
+      y * this.tileSize + this.tileSize * (1 / 6)
     )
     this.context.lineTo(
       x * this.tileSize + this.tileSize * (5 / 6),
-      y * this.tileSize + this.tileSize * (5 / 6),
+      y * this.tileSize + this.tileSize * (5 / 6)
     )
 
     this.context.moveTo(
       x * this.tileSize + this.tileSize * (5 / 6),
-      y * this.tileSize + this.tileSize * (1 / 6),
+      y * this.tileSize + this.tileSize * (1 / 6)
     )
     this.context.lineTo(
       x * this.tileSize + this.tileSize * (1 / 6),
-      y * this.tileSize + this.tileSize * (5 / 6),
+      y * this.tileSize + this.tileSize * (5 / 6)
     )
 
     this.context.strokeStyle = 'green'
@@ -61,7 +60,7 @@ class Tile {
       this.tileSize * (1 / 3),
       0,
       2 * Math.PI,
-      false,
+      false
     )
 
     this.context.strokeStyle = 'red'

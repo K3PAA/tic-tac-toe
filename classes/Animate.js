@@ -1,13 +1,14 @@
 class Animate {
-  constructor({ context }) {
+  constructor({ context, canvas }) {
     this.context = context
+    this.canvas = canvas
     this.interval = undefined
   }
 
   drawRowLine({ i, from, to, partX }) {
     this.context.beginPath()
-    this.context.moveTo(i * partX, from.y)
-    this.context.lineTo(i * partX + partX, to.y)
+    this.context.moveTo(i * partX + 5, from.y)
+    this.context.lineTo(i * partX + partX + 5, to.y)
     this.context.strokeStyle = `hsl(${i * 2 + 200}, 50%, 50%)`
     this.context.lineWidth = 5
     this.context.stroke()
@@ -16,8 +17,8 @@ class Animate {
 
   drawColumnLine({ i, from, to, partY }) {
     this.context.beginPath()
-    this.context.moveTo(from.x, i * partY)
-    this.context.lineTo(to.x, i * partY + partY)
+    this.context.moveTo(from.x, i * partY + 5)
+    this.context.lineTo(to.x, i * partY + partY + 5)
     this.context.strokeStyle = `hsl(${i * 2 + 200}, 50%, 50%)`
     this.context.lineWidth = 5
     this.context.stroke()
@@ -26,8 +27,11 @@ class Animate {
 
   drawCrossTRBL({ i, from, to, partX, partY }) {
     this.context.beginPath()
-    this.context.moveTo(from.x + partX * i, from.y - partY * i)
-    this.context.lineTo(from.x + partX * i + partX, from.y - i * partY - partY)
+    this.context.moveTo(from.x + partX * i + 4, from.y - partY * i - 4)
+    this.context.lineTo(
+      from.x + partX * i + partX + 4,
+      from.y - i * partY - partY - 4
+    )
     this.context.strokeStyle = `hsl(${i * 2 + 200}, 50%, 50%)`
     this.context.lineWidth = 5
     this.context.stroke()
@@ -36,8 +40,8 @@ class Animate {
 
   drawCrossTLBR({ i, from, to, partX, partY }) {
     this.context.beginPath()
-    this.context.moveTo(from.x + i * partX, i * partY)
-    this.context.lineTo(i * partX + partX, i * partY + partY)
+    this.context.moveTo(from.x + i * partX + 4, i * partY + 4)
+    this.context.lineTo(i * partX + partX + 4, i * partY + partY + 4)
     this.context.strokeStyle = `hsl(${i * 2 + 200}, 50%, 50%)`
     this.context.lineWidth = 5
     this.context.stroke()
@@ -53,17 +57,15 @@ class Animate {
     for (let i = 0; i < 50; i++) {
       this.interval = setTimeout(() => {
         if (partY && !partX) {
-          console.log('column')
           this.drawColumnLine({ i, from, to, partY })
         } else if (partX && !partY) {
-          console.log('rowLine')
           this.drawRowLine({ i, from, to, partX })
         } else if (type === 'top right <=> bottom left') {
           this.drawCrossTRBL({ i, from, to, partX, partY })
         } else if (type === 'top left <=> bottom right') {
           this.drawCrossTLBR({ i, from, to, partX, partY })
         }
-      }, i * 5)
+      }, i * 10)
     }
 
     clearTimeout(this.interval)

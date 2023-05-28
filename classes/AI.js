@@ -1,7 +1,8 @@
 class AI {
-  constructor({ timeForMove, isMoving }) {
+  constructor({ timeForMove, isMoving, identyficator }) {
     this.score = 0
     this.timeForMove = timeForMove
+    this.identyficator = identyficator
     this.scoreDisplay = document.querySelector('.enemy-score')
     this.isMoving = isMoving
   }
@@ -22,8 +23,11 @@ class AI {
     return emptySpaces.length > 0 ? emptySpaces[randomNumber] : false
   }
 
+  displayScore() {
+    this.scoreDisplay.innerHTML = this.score
+  }
   updateScore() {
     this.score++
-    this.scoreDisplay.innerHTML = this.score
+    this.displayScore()
   }
 }
